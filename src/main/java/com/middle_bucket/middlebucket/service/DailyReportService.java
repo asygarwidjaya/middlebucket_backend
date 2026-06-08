@@ -6,6 +6,7 @@ import com.middle_bucket.middlebucket.dto.response.DailyReportResponse;
 import com.middle_bucket.middlebucket.dto.response.ReportAttachmentResponse;
 import com.middle_bucket.middlebucket.entity.DailyReport;
 import com.middle_bucket.middlebucket.entity.ReportAttachment;
+import com.middle_bucket.middlebucket.entity.Role;
 import com.middle_bucket.middlebucket.entity.User;
 import com.middle_bucket.middlebucket.repository.DailyReportRepository;
 import com.middle_bucket.middlebucket.repository.ReportAttachmentRepository;
@@ -136,5 +137,34 @@ public class DailyReportService {
 
         // Delete from database
         reportAttachmentRepository.delete(attachment);
+    }
+    @Transactional
+    public void deleteReport(Long reportId, String userEmail) throws IOException {
+
+        DailyReport report = dailyReportRepository.findById(reportId)
+                .orElseThrow(() -> new RuntimeException("Report tidak ditemukan"));
+
+        User currentUser = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("User tidak ditemukan"));
+
+        boolean isOwner = report.getUser().getEmail().equals(userEmail);
+        boolean isManager = currentUser.getRole() == Role.MANAGER;
+
+        if (!isOwner && !isManager) {
+            throw new RuntimeException("Anda tidak memiliki akses untuk menghapus report ini");
+        }
+
+        // Hapus file attachment dari storage
+        for (ReportAttachment attachment : report.getAttachments()) {
+
+            Path filePath = Paths.get(
+                    "uploads/reports/" + attachment.getFilename()
+            );
+
+            Files.deleteIfExists(filePath);
+        }
+
+        // Hapus report
+        dailyReportRepository.delete(report);
     }
 }

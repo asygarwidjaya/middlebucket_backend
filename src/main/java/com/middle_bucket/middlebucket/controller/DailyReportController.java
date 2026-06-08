@@ -101,4 +101,30 @@ public class DailyReportController {
                     .body(ApiResponse.error(e.getMessage()));
         }
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteReport(
+            @PathVariable Long id,
+            Authentication authentication) {
+
+        try {
+
+            dailyReportService.deleteReport(
+                    id,
+                    authentication.getName()
+            );
+
+            return ResponseEntity.ok(
+                    ApiResponse.succes(
+                            "Report berhasil dihapus",
+                            null
+                    )
+            );
+
+        } catch (Exception e) {
+
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error(e.getMessage()));
+        }
+    }
 }
