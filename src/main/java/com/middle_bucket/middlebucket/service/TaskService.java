@@ -110,7 +110,11 @@ public class TaskService {
         task.setDescription(request.getDescription());
         task.setPriority(TaskPriority.valueOf(request.getPriority()));
         task.setDueDate(request.getDueDate());
-        task.setStatus(TaskStatus.TODO);
+        if (request.getStatus() != null && !request.getStatus().isBlank()) {
+            task.setStatus(TaskStatus.valueOf(request.getStatus()));
+        } else {
+            task.setStatus(TaskStatus.TODO);
+        }
         task.setCreatedBy(creator);
 
         String assigneeInfo = "";
