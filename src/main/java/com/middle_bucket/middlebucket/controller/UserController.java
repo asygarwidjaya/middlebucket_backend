@@ -25,14 +25,14 @@ public class UserController {
     // hasAuthority (bukan hasRole) — cocok dengan JWT yang menyimpan "MANAGER"/"STAFF"
     // tanpa prefix "ROLE_"
     @GetMapping
-//    @PreAuthorize("hasAnyAuthority('MANAGER', 'STAFF')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'STAFF')")
     public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsers() {
         List<UserResponse> users = userService.getAllUsers();
         return ResponseEntity.ok(ApiResponse.succes("Berhasil mengambil users", users));
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'STAFF')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'STAFF')")
     public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable Long id) {
         try {
             UserResponse user = userService.getUserById(id);
@@ -43,7 +43,7 @@ public class UserController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<ApiResponse<UserResponse>> createUser(
             @RequestBody UserCreateRequest request) {
         try {
@@ -60,7 +60,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<ApiResponse<UserResponse>> updateUser(
             @PathVariable Long id,
             @RequestBody UserUpdateRequest request) {
@@ -77,7 +77,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long id) {
         try {
             userService.deleteUser(id);
