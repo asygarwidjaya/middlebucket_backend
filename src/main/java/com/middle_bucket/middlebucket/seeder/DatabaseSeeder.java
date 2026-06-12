@@ -4,6 +4,7 @@ package com.middle_bucket.middlebucket.seeder;
 import com.middle_bucket.middlebucket.entity.Role;
 import com.middle_bucket.middlebucket.entity.User;
 import com.middle_bucket.middlebucket.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,10 @@ import java.time.LocalDateTime;
 
 @Component
 public class DatabaseSeeder implements CommandLineRunner {
+
+    @Value("${app.default-manager.password}")
+    private String defaultManagerPassword;
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -37,7 +42,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         manager.setName("Admin Manager");
         manager.setEmail("manager@middlebucket.com");
         manager.setPhone("081111111111");
-        manager.setPassword(passwordEncoder.encode("Password123!"));
+        manager.setPassword(passwordEncoder.encode(defaultManagerPassword));
         manager.setRole(Role.MANAGER);
         manager.setCreatedAt(LocalDateTime.now());
         userRepository.save(manager);
